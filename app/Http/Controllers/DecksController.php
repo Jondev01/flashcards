@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
+use App\Deck;
+use Auth;
 
 class DecksController extends Controller
 {
@@ -13,7 +14,8 @@ class DecksController extends Controller
      */
     public function index()
     {
-        //
+        $decks = Auth::user()->decks->sortByDesc('name');
+        return view('decks.index')->with('decks', $decks);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     }
 
     /**
@@ -23,7 +25,7 @@ class DecksController extends Controller
      */
     public function create()
     {
-        //
+        return view('decks.create');
     }
 
     /**
@@ -34,7 +36,19 @@ class DecksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required'
+        ]);
+
+        $deck = new Deck;
+        $deck->fill([
+            'name' => $request->input('name'),
+            'description'=> $request->input('description'),
+        ]);
+        $deck->user_id = Auth::id();
+        $deck->save();
+        return redirect('home');
     }
 
     /**
