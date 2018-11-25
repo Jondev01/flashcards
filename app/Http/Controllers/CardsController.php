@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use App\Card;
 
 class CardsController extends Controller
 {
@@ -24,7 +25,7 @@ class CardsController extends Controller
      */
     public function create()
     {
-        //
+        return view('cards.create');
     }
 
     /**
@@ -35,7 +36,19 @@ class CardsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'front' => 'required',
+            'back' => 'required'
+        ]);
+
+        $card = new Card;
+        $card->fill([
+            'front' => $request->input('front'),
+            'back'=> $request->input('back')
+        ]);
+        //$card->deck_id =
+        $card->save();
+        return redirect('home');
     }
 
     /**

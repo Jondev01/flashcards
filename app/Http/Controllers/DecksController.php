@@ -59,7 +59,8 @@ class DecksController extends Controller
      */
     public function show($id)
     {
-        //
+        $deck = Deck::findOrFail($id);
+        return response()->json($deck);
     }
 
     /**
@@ -70,7 +71,8 @@ class DecksController extends Controller
      */
     public function edit($id)
     {
-        //
+        $deck = Deck::findOrFail($id);
+        return view('decks.edit')->with('deck', $deck);
     }
 
     /**

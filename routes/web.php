@@ -16,6 +16,7 @@ Route::get('/', function () {
 });
 
 Route::resource('decks', 'DecksController');
+Route::resource('cards', 'CardsController');
 
 Auth::routes();
 
