@@ -60,7 +60,7 @@ class DecksController extends Controller
     public function show($id)
     {
         $deck = Deck::findOrFail($id);
-        return response()->json($deck);
+        return response()->json($deck->cards);
     }
 
     /**
