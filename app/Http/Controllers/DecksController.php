@@ -12,10 +12,20 @@ class DecksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function index()
     {
         $decks = Auth::user()->decks->sortByDesc('name');
         return view('decks.index')->with('decks', $decks);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+    }
+    public function getDecks()
+    {
+        $decks = Auth::user()->decks->sortByDesc('name');
+        return response()->json($decks);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     }
 
     /**
@@ -63,6 +73,12 @@ class DecksController extends Controller
         return response()->json($deck->cards);
     }
 
+    public function editDecks()
+    {
+        $decks = Auth::user()->decks->sortByDesc('name');
+        return view('decks.editDecks')->with('decks', $decks);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -95,6 +111,7 @@ class DecksController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Deck::destroy($id);
+        return response()->json(['success' => 'The deck was successfully deleted']);
     }
 }

@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('decks/editDecks', 'DecksController@editDecks');
+Route::get('decks/getDecks', 'DecksController@getDecks');
 Route::resource('decks', 'DecksController');
 Route::resource('cards', 'CardsController');
 

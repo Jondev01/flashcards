@@ -56,7 +56,7 @@
         function nextCard(){
             //get random card
             let temp = cards[Math.floor(Math.random()*cards.length)]; 
-            //make sure a new card was chosen, otherwise try again
+            //makes sure a new card was chosen, otherwise try again
             if(card && card.id === temp.id && cards.length>1)
                 nextCard();
             else
