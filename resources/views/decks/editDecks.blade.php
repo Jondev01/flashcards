@@ -9,9 +9,6 @@
             @endforeach
         @endif
     </select>
-    <!--{!!Form::open(array('action' => ['DecksController@destroy', $deck->id], 'method'=>'DELETE'))!!}
-        {{Form::submit('Delete', ['class'=> 'btn btn-danger'])}}
-    {!!Form::close()!!} -->
     <button class="btn btn-danger" onclick="deleteDeck()">Delete this deck</button>
     <div id="displayCards">
         <select id = "selectCard" onselect="selectCard()" multiple>;
@@ -19,10 +16,10 @@
     </div>
 
     <div id="addCard">
-        <button class="btn btn-primary">Add a new card</button>
+        <button class="btn btn-primary" onclick="showModalCard()">Add a new card</button>
     </div>
-    <div id="modal-card">
-        {{ Form::open() }}
+    <div id="modal-card" class="modal">
+        {{ Form::open(array('onsubmit' => 'addCard(this); return false;', 'class' =>'modal-content')) }}
             <div class="form-group">
                 {{ Form::label('front', 'Front') }}
                 {{ Form::text('front', '', ['class' => 'form-control', 'placeholder' => 'Front']) }}
@@ -123,6 +120,30 @@
         xhttp.open('DELETE', '{!! route('decks.index')!!}'+`/${deck.id}`, true);
         let token =  document.querySelector('meta[name=csrf-token]').content
         xhttp.setRequestHeader('X-CSRF-Token', token);
+        xhttp.send();
+    }
+
+    function showModalCard(){
+        let e = document.getElementById('modal-card');
+        e.style.display = 'block';
+    }
+
+    function addCard(form){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            //on success
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);  
+            }
+        };
+        //gets the url via hack
+        data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
+             + "&" + "id=" + deck.id;
+        console.log(data);
+        xhttp.open('POST', '{!! route('cards.index')!!}'+ data, true);
+        let token =  document.querySelector('meta[name=csrf-token]').content
+        xhttp.setRequestHeader('X-CSRF-Token', token);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.send();
     }
 </script>

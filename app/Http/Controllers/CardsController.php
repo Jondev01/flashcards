@@ -38,7 +38,8 @@ class CardsController extends Controller
     {
         $this->validate($request, [
             'front' => 'required',
-            'back' => 'required'
+            'back' => 'required',
+            'id' => 'required'
         ]);
 
         $card = new Card;
@@ -46,8 +47,10 @@ class CardsController extends Controller
             'front' => $request->input('front'),
             'back'=> $request->input('back')
         ]);
-        //$card->deck_id =
+        $card->deck_id = $request->input('id');
         $card->save();
+        if($request->ajax())
+            return;
         return redirect('home');
     }
 
