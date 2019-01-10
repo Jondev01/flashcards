@@ -16,7 +16,7 @@
     </div>
 
     <div id="addCard">
-        <button class="btn btn-primary" onclick="showModalCard()">Add a new card</button>
+        <button class="btn btn-primary" onclick="toggleModalCard()">Add a new card</button>
     </div>
     <div id="modal-card" class="modal">
         {{ Form::open(array('onsubmit' => 'addCard(this); return false;', 'class' =>'modal-content')) }}
@@ -30,6 +30,9 @@
             </div>
             {{  Form::submit('Add card', ['class' => 'btn btn-primary']) }}
         {{  Form::close() }}
+    </div>
+    <div id="deleteCard">
+        <button class="btn btn-danger" onclick="deleteCard()">Delete selected card</button>
     </div>
 </div>
 
@@ -123,9 +126,51 @@
         xhttp.send();
     }
 
-    function showModalCard(){
+    function deleteCard(){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            //on success
+            if (this.readyState == 4 && this.status == 200) {
+                let response = JSON.parse(this.responseText);
+                console.log(response)
+                updateDecks();
+            }
+        };
+        let e = document.getElementById('selectCard');
+        console.log(e.selectedOptions);
+        let data = [];
+        for(let opt of e.selectedOptions){
+            data.push(parseInt(opt.value));
+        }
+        console.log(data);
+        postData(`{!! route('cards.index')!!}/deleteMultiple`, {ids: data})
+        .then(data => console.log(data)) // JSON-string from `response.json()` call
+        .then( () => updateCards()) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+        //gets the url via hack
+       /* xhttp.open('DELETE', '{!! route('cards.index')!!}'+`/${deck.id}`, true);
+        let token =  document.querySelector('meta[name=csrf-token]').content
+        xhttp.setRequestHeader('X-CSRF-Token', token);
+        xhttp.send();*/
+    }
+
+    function postData(url = ``, data = {}) {
+        let token =  document.querySelector('meta[name=csrf-token]').content
+  // Default options are marked with *
+    return fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+            'Content-Type': 'application/json',
+             'X-CSRF-Token': token
+        },
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+    })
+    .then(response => response.json()); // parses response to JSON
+}
+
+    function toggleModalCard(){
         let e = document.getElementById('modal-card');
-        e.style.display = 'block';
+        e.style.display = e.style.display ==='block' ? 'none' : 'block';
     }
 
     function addCard(form){
@@ -133,13 +178,14 @@
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);  
+                console.log(this.responseText); 
+                form.reset(); 
+                toggleModalCard();
+                updateCards();
             }
         };
-        //gets the url via hack
         data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
              + "&" + "id=" + deck.id;
-        console.log(data);
         xhttp.open('POST', '{!! route('cards.index')!!}'+ data, true);
         let token =  document.querySelector('meta[name=csrf-token]').content
         xhttp.setRequestHeader('X-CSRF-Token', token);

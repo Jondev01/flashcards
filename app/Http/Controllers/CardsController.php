@@ -51,7 +51,7 @@ class CardsController extends Controller
         $card->save();
         if($request->ajax())
             return;
-        return redirect('home');
+        return response()->json("Card saved");
     }
 
     /**
@@ -96,6 +96,11 @@ class CardsController extends Controller
      */
     public function destroy($id)
     {
-        //
+            Card::findOrFail($id)->delete();
+    }
+
+    public function deleteMultiple(Request $request){
+        Card::destroy($request->input('ids'));
+        return response()->json("Card(s) deleted");
     }
 }
