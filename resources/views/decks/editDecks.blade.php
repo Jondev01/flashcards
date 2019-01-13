@@ -11,7 +11,7 @@
     </select>
     <button class="btn btn-danger" onclick="deleteDeck()">Delete this deck</button>
     <div id="displayCards">
-        <select id = "selectCard" onselect="selectCard()" multiple>;
+        <select id = "selectCard" onchange="selectCard(this)" multiple>;
         </select>
     </div>
 
@@ -34,13 +34,22 @@
     <div id="deleteCard">
         <button class="btn btn-danger" onclick="deleteCard()">Delete selected card</button>
     </div>
+    <div id="view-card">
+        <div class="card">
+            front of card
+        </div>
+        <div class="card">
+            backside of card
+        </div>
+        <button class="btn btn-primary">edit</button>
+    </div>
 </div>
 
 
 <!------- javascript ------------------------------------------------------->
 <script type="application/javascript">
     let decks = {!!$decks!!};
-    let deck, cards, card;
+    let deck, cards;
     updateDeck();
     
     function updateDeck(){
@@ -101,12 +110,31 @@
         let e = document.getElementById('selectCard');
         e.innerHTML = '';
         for(let key in cards){
-            e.innerHTML += `<option id="${cards[key].id}" value="${cards[key].id}">${cards[key].front}/${cards[key].back}</option>`;
+            e.innerHTML += `
+            <option id="${cards[key].id}" value="${cards[key].id}">
+                ${cards[key].front}/${cards[key].back} 
+            </option>`;
         }
     }
 
-    function selectCard(){
-
+    function selectCard(e){
+        if(e.selectedOptions.length === 1){
+            //view selected card
+            //viewCard(e.selectedOptions[0].id);
+            let card;
+            let id = e.selectedOptions[0].id;
+            for(let c of cards){
+                if(c.id == id){
+                    card = c;
+                    break;
+                }
+            }
+            let cardEl = document.getElementById('view-card');
+            cardEl.childNodes[0].innerHTML = card.front;
+            cardEl.childNodes[2].innerHTML = card.back;
+            document.getElementById('front').innerHTML = card.front;
+            document.getElementById('back').innerHTML = card.back;
+        }
     }
 
     function deleteDeck(){
@@ -137,12 +165,10 @@
             }
         };
         let e = document.getElementById('selectCard');
-        console.log(e.selectedOptions);
         let data = [];
         for(let opt of e.selectedOptions){
             data.push(parseInt(opt.value));
         }
-        console.log(data);
         postData(`{!! route('cards.index')!!}/deleteMultiple`, {ids: data})
         .then(data => console.log(data)) // JSON-string from `response.json()` call
         .then( () => updateCards()) // JSON-string from `response.json()` call
