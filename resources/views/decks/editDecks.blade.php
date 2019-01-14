@@ -15,8 +15,26 @@
         </select>
     </div>
 
+    <div id="addDeck">
+        <button class="btn btn-primary" onclick="toggleModalCard('modal-addDeck')">Add a new deck</button>
+    </div>
+
+    <div id="modal-addDeck" class="modal">
+        {{ Form::open(array('onsubmit' => 'addDeck(this); return false;', 'class' =>'modal-content')) }}
+            <div class="form-group">
+                {{ Form::label('name', 'Name') }}
+                {{ Form::text('name', '', ['class' => 'form-control', 'placeholder' => 'German']) }}
+            </div>
+            <div class="form-group">
+                {{ Form::label('description', 'Description') }}
+                {{ Form::text('description', '', ['class' => 'form-control', 'placeholder' => 'Contains flashcards to practice German']) }}
+            </div>
+            {{  Form::submit('Add deck', ['class' => 'btn btn-primary']) }}
+        {{  Form::close() }}
+    </div>
+
     <div id="addCard">
-        <button class="btn btn-primary" onclick="toggleModalCard()">Add a new card</button>
+        <button class="btn btn-primary" onclick="toggleModalCard('modal-card')">Add a new card</button>
     </div>
     <div id="modal-card" class="modal">
         {{ Form::open(array('onsubmit' => 'addCard(this); return false;', 'class' =>'modal-content')) }}
@@ -31,17 +49,32 @@
             {{  Form::submit('Add card', ['class' => 'btn btn-primary']) }}
         {{  Form::close() }}
     </div>
+    <div id="modal-edit" class="modal">
+        {{ Form::open(array('onsubmit' => 'editCard(this); return false;', 'class' =>'modal-content')) }}
+            <div class="form-group">
+                {{ Form::label('front', 'Front') }}
+                {{ Form::text('front', '', ['class' => 'form-control', 'placeholder' => 'Front']) }}
+            </div>
+            <div class="form-group">
+                {{ Form::label('back', 'Back') }}
+                {{ Form::text('back', '', ['class' => 'form-control', 'placeholder' => 'Back']) }}
+            </div>
+            {{  Form::submit('Save changes', ['class' => 'btn btn-primary']) }}
+        {{  Form::close() }}
+    </div>
     <div id="deleteCard">
         <button class="btn btn-danger" onclick="deleteCard()">Delete selected card</button>
     </div>
     <div id="view-card">
-        <div class="card">
+        <div id="front" class="card">
             front of card
         </div>
-        <div class="card">
+        <div id="back" class="card">
             backside of card
         </div>
-        <button class="btn btn-primary">edit</button>
+        <div id="editCard">
+            <button class="btn btn-primary" onclick="toggleModalCard('modal-edit')">edit</button>
+        </div>
     </div>
 </div>
 
@@ -49,7 +82,7 @@
 <!------- javascript ------------------------------------------------------->
 <script type="application/javascript">
     let decks = {!!$decks!!};
-    let deck, cards;
+    let deck, cards, curCard;
     updateDeck();
     
     function updateDeck(){
@@ -129,9 +162,11 @@
                     break;
                 }
             }
+            curCard = card;
             let cardEl = document.getElementById('view-card');
-            cardEl.childNodes[0].innerHTML = card.front;
-            cardEl.childNodes[2].innerHTML = card.back;
+            cardEl.dataset.value = id;
+            cardEl.children[0].innerHTML = card.front;
+            cardEl.children[1].innerHTML = card.back;
             document.getElementById('front').innerHTML = card.front;
             document.getElementById('back').innerHTML = card.back;
         }
@@ -194,8 +229,13 @@
     .then(response => response.json()); // parses response to JSON
 }
 
-    function toggleModalCard(){
-        let e = document.getElementById('modal-card');
+    function toggleModalCard(id){
+        let e = document.getElementById(id);
+        if(id === 'modal-edit'){
+            //if edit, display current values
+            e.children[0]["front"].value = curCard.front;
+            e.children[0]["back"].value = curCard.back;
+        }
         e.style.display = e.style.display ==='block' ? 'none' : 'block';
     }
 
@@ -206,13 +246,55 @@
             if (this.readyState == 4 && this.status == 200) {
                 console.log(this.responseText); 
                 form.reset(); 
-                toggleModalCard();
+                toggleModalCard('modal-card');
                 updateCards();
             }
         };
-        data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
+        let data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
              + "&" + "id=" + deck.id;
         xhttp.open('POST', '{!! route('cards.index')!!}'+ data, true);
+        let token =  document.querySelector('meta[name=csrf-token]').content
+        xhttp.setRequestHeader('X-CSRF-Token', token);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send();
+    }
+
+    function addDeck(form){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            //on success
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText); 
+                form.reset(); 
+                toggleModalCard('modal-addDeck');
+                updateDecks();
+            }
+        };
+        let data = "?"+"name="+form["name"].value+"&" + "description=" + form["description"].value;
+        xhttp.open('POST', '{!! route('decks.index')!!}'+ data, true);
+        let token =  document.querySelector('meta[name=csrf-token]').content
+        xhttp.setRequestHeader('X-CSRF-Token', token);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send();
+    }
+
+    function editCard(form){
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            //on success
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText); 
+                form.reset(); 
+                toggleModalCard('modal-edit');
+                updateCards();
+                document.getElementById('front').innerHTML = '';
+                document.getElementById('back').innerHTML = '';
+            }
+        };
+        let data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
+             + "&" + "id=" + deck.id;
+        let card_id = document.getElementById('view-card').dataset.value;
+        xhttp.open('PUT', '{!! route('cards.index')!!}'+ `/${card_id}`+data, true);
         let token =  document.querySelector('meta[name=csrf-token]').content
         xhttp.setRequestHeader('X-CSRF-Token', token);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

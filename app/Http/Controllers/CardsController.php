@@ -85,7 +85,15 @@ class CardsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'front' => 'required',
+            'back' => 'required',
+        ]);
+        $card = Card::findOrFail($id);
+        $card->front = $request->input('front');
+        $card->back = $request->input('back');
+        $card->save();
+        return response()->json("Card updated");
     }
 
     /**
