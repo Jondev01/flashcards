@@ -45,7 +45,7 @@
                 //on success
                 if (this.readyState == 4 && this.status == 200) {
                 cards = JSON.parse(this.responseText);
-                nextCard();
+                    nextCard();
                 }
             };
             //gets the url via hack
@@ -54,6 +54,8 @@
         }
 
         function nextCard(){
+            if(Object.keys(cards).length==0)
+                return;
             //get random card
             let temp = cards[Math.floor(Math.random()*cards.length)]; 
             //makes sure a new card was chosen, otherwise try again

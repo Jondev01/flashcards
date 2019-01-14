@@ -58,6 +58,9 @@
                                     <a class="dropdown-item" href="{{ route('decks.index') }}">
                                         Practice
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('decks.editDecks') }}">
+                                        Edit Decks
+                                    </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

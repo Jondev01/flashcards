@@ -9,8 +9,13 @@
             @endforeach
         @endif
     </select>
+    <div id="number-of-decks">
+        hallo
+    </div>
     <button class="btn btn-danger" onclick="deleteDeck()">Delete this deck</button>
     <div id="displayCards">
+        <div id="number-of-cards">
+        </div>
         <select id = "selectCard" onchange="selectCard(this)" multiple>;
         </select>
     </div>
@@ -34,7 +39,7 @@
     </div>
 
     <div id="addCard">
-        <button class="btn btn-primary" onclick="toggleModalCard('modal-card')">Add a new card</button>
+        <button class="btn btn-primary" onclick="toggleModalCard('modal-card')">Add flashcard</button>
     </div>
     <div id="modal-card" class="modal">
         {{ Form::open(array('onsubmit' => 'addCard(this); return false;', 'class' =>'modal-content')) }}
@@ -63,7 +68,7 @@
         {{  Form::close() }}
     </div>
     <div id="deleteCard">
-        <button class="btn btn-danger" onclick="deleteCard()">Delete selected card</button>
+        <button class="btn btn-danger" onclick="deleteCard()">Delete selected card(s)</button>
     </div>
     <div id="view-card">
         <div id="front" class="card">
@@ -83,7 +88,7 @@
 <script type="application/javascript">
     let decks = {!!$decks!!};
     let deck, cards, curCard;
-    updateDeck();
+    updateDecks();
     
     function updateDeck(){
         deck = getCurrentDeck();
@@ -137,6 +142,8 @@
         for(let key in decks){
             e.innerHTML += `<option id="${decks[key].id}" value="${decks[key].id}">${decks[key].name}</option>`;
         }
+        //display number of decks
+        document.getElementById('number-of-decks').innerHTML = `${Object.keys(decks).length} deck${Object.keys(decks).length !== 1 ? "s" : ""}`;
     }
 
     function displayCards(){
@@ -148,6 +155,12 @@
                 ${cards[key].front}/${cards[key].back} 
             </option>`;
         }
+        //number of cards
+        if(cards)
+            document.getElementById('number-of-cards').innerHTML = `${Object.keys(cards).length} flashcard${Object.keys(cards).length !== 1 ? "s" : ""}`;
+        else 
+        document.getElementById('number-of-cards').innerHTML = "0 cards";
+
     }
 
     function selectCard(e){

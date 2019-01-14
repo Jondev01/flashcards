@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('decks/editDecks', 'DecksController@editDecks');
+Route::get('decks/editDecks', 'DecksController@editDecks')->name('decks.editDecks');
 Route::get('decks/getDecks', 'DecksController@getDecks');
 Route::post('cards/deleteMultiple', 'CardsController@deleteMultiple');
 Route::resource('decks', 'DecksController');
