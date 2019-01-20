@@ -42,3 +42,36 @@
   border: 1px solid #888;
   width: 40%;
 }
+
+.fc-pointer{
+  :hover{
+    cursor: pointer;
+  }
+}
+
+select {
+  display: block;
+  margin: 25px auto;
+  min-width: 10rem;
+  max-width: 50vw;
+  padding: 5px 35px 5px 5px;
+  border: 1px solid #ccc;
+  height: 2.5rem;
+  font-size: 1.1rem;
+  :hover{
+    cursor: pointer;
+  }
+}
+
+.card-text{
+  text-align: center;
+}
+
+.select-multiple{
+  min-height: 7rem;
+  max-height: 70vh;
+}
+
+i:hover{
+  cursor: pointer;
+}

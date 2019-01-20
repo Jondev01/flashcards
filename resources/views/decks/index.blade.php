@@ -9,9 +9,13 @@
                 @endforeach
             @endif
         </select>
-        <button onclick="nextCard()">Next</button>
-        <div class="card noselect" id="card" onclick="flipCard()">
-            Current card
+        <!--<button onclick="nextCard()">Next</button>-->
+        <div class="card noselect fc-pointer" onclick="flipCard()" style="height:40vh">
+            <div class="card-body">
+                <p id="card" class="card-text">Current card</p>
+                <hr>
+                <p id="card-back" class="card-text"></p>
+            </div>
         </div>
     </div>
 
@@ -54,8 +58,12 @@
         }
 
         function nextCard(){
-            if(Object.keys(cards).length==0)
+            if(Object.keys(cards).length==0){
+                document.getElementById("card").innerHTML = "<a href=\"{{route('decks.editDecks')}}\">Add flashcards to this deck</a>";
+                document.getElementById("card-back").innerHTML = ""
+                card = undefined;
                 return;
+            }
             //get random card
             let temp = cards[Math.floor(Math.random()*cards.length)]; 
             //makes sure a new card was chosen, otherwise try again
@@ -65,14 +73,21 @@
                 card = temp;
             front = true;
             document.getElementById("card").innerHTML = card.front;
+            document.getElementById("card-back").innerHTML = ""
         }
 
         function flipCard(){
-            if(front)
-                document.getElementById("card").innerHTML = card.back;
-            else 
-                document.getElementById("card").innerHTML = card.front;
-            front = !front;
+            if(!card)
+                return;
+            if(front){
+                document.getElementById("card-back").innerHTML = card.back;
+                front = false;
+            }
+            else{ 
+                nextCard();
+                /*document.getElementById("card").innerHTML = card.front;
+                document.getElementById("card-back").innerHTML = "";*/
+            }
         }
 
     </script>

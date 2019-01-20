@@ -2,27 +2,34 @@
 
 @section('content')
 <div class="container">
-    <select id="selectDeck" onchange="updateDeck()">
-        @if(count($decks) > 0)
-            @foreach($decks as $deck)
-                <option id="{{$deck->id}}" value="{{$deck->id}}">{{$deck->name}}</option>
-            @endforeach
-        @endif
-    </select>
-    <div id="number-of-decks">
-        hallo
-    </div>
-    <button class="btn btn-danger" onclick="deleteDeck()">Delete this deck</button>
-    <div id="displayCards">
-        <div id="number-of-cards">
+    <div>
+        <div>
+            <div id="number-of-decks" style="text-align:center; display:inline-block">
+                    
+            </div>
+            <div id="addDeck" style="display:inline-block">
+                    <i class="fa fa-plus" onclick="toggleModalCard('modal-addDeck')"></i>
+            </div>
         </div>
-        <select id = "selectCard" onchange="selectCard(this)" multiple>;
+        <select id="selectDeck" onchange="updateDeck()">
+            @if(count($decks) > 0)
+                @foreach($decks as $deck)
+                    <option id="{{$deck->id}}" value="{{$deck->id}}">{{$deck->name}}</option>
+                @endforeach
+            @endif
+        </select>
+        <button class="btn btn-danger" onclick="deleteDeck()"><i class="fa fa-trash" aria-hidden="true"></i></button>
+    </div>
+    <div id="displayCards">
+        <div id="number-of-cards" style="display:inline-block">
+        </div>
+        <div id="addCard" style="display: inline-block">
+            <i class="fa fa-plus" onclick="toggleModalCard('modal-card')"></i>
+        </div>
+        <select id = "selectCard" class="select-multiple" onchange="selectCard(this)" multiple>;
         </select>
     </div>
 
-    <div id="addDeck">
-        <button class="btn btn-primary" onclick="toggleModalCard('modal-addDeck')">Add a new deck</button>
-    </div>
 
     <div id="modal-addDeck" class="modal">
         {{ Form::open(array('onsubmit' => 'addDeck(this); return false;', 'class' =>'modal-content')) }}
@@ -38,18 +45,15 @@
         {{  Form::close() }}
     </div>
 
-    <div id="addCard">
-        <button class="btn btn-primary" onclick="toggleModalCard('modal-card')">Add flashcard</button>
-    </div>
     <div id="modal-card" class="modal">
         {{ Form::open(array('onsubmit' => 'addCard(this); return false;', 'class' =>'modal-content')) }}
             <div class="form-group">
                 {{ Form::label('front', 'Front') }}
-                {{ Form::text('front', '', ['class' => 'form-control', 'placeholder' => 'Front']) }}
+                {{ Form::text('front', '', ['class' => 'form-control', 'placeholder' => 'hallo']) }}
             </div>
             <div class="form-group">
                 {{ Form::label('back', 'Back') }}
-                {{ Form::text('back', '', ['class' => 'form-control', 'placeholder' => 'Back']) }}
+                {{ Form::text('back', '', ['class' => 'form-control', 'placeholder' => 'hello']) }}
             </div>
             {{  Form::submit('Add card', ['class' => 'btn btn-primary']) }}
         {{  Form::close() }}
@@ -68,17 +72,18 @@
         {{  Form::close() }}
     </div>
     <div id="deleteCard">
-        <button class="btn btn-danger" onclick="deleteCard()">Delete selected card(s)</button>
+        <button class="btn btn-danger" onclick="deleteCard()"><i class="fa fa-trash" aria-hidden="true"></i></button>
     </div>
-    <div id="view-card">
-        <div id="front" class="card">
-            front of card
-        </div>
-        <div id="back" class="card">
-            backside of card
-        </div>
+    <div id="view-card" class="card">
+        <div class="card-body">
+            <p id="view-front" class="card-text">
+            </p>
+            <hr>
+            <p id="view-back" class="card-text">
+            </p>
+        </div>  
         <div id="editCard">
-            <button class="btn btn-primary" onclick="toggleModalCard('modal-edit')">edit</button>
+            <button class="btn btn-primary" onclick="toggleModalCard('modal-edit')"><i class="fa fa-edit"></i></button>
         </div>
     </div>
 </div>
@@ -86,6 +91,20 @@
 
 <!------- javascript ------------------------------------------------------->
 <script type="application/javascript">
+//close Modals
+window.onclick = function(event) {
+    let modals = [
+        document.getElementById('modal-edit'),
+        document.getElementById('modal-card'),
+        document.getElementById('modal-addDeck')
+        ];
+    for(let modal of modals){
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+}
+
     let decks = {!!$decks!!};
     let deck, cards, curCard;
     updateDecks();
@@ -178,14 +197,15 @@
             curCard = card;
             let cardEl = document.getElementById('view-card');
             cardEl.dataset.value = id;
-            cardEl.children[0].innerHTML = card.front;
-            cardEl.children[1].innerHTML = card.back;
-            document.getElementById('front').innerHTML = card.front;
-            document.getElementById('back').innerHTML = card.back;
+            console.log(document.getElementById('view-front').innerHTML);
+            document.getElementById('view-front').innerHTML = curCard.front;
+            document.getElementById('view-back').innerHTML = curCard.back;
         }
     }
 
     function deleteDeck(){
+        if(!confirm(`Do you want to delete the deck \'${deck.name}\'?`))
+            return;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             //on success
@@ -203,6 +223,8 @@
     }
 
     function deleteCard(){
+        if(!confirm('Delete the selected card(s)?'))
+            return;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             //on success
@@ -245,6 +267,8 @@
     function toggleModalCard(id){
         let e = document.getElementById(id);
         if(id === 'modal-edit'){
+            if(!curCard)
+                return;
             //if edit, display current values
             e.children[0]["front"].value = curCard.front;
             e.children[0]["back"].value = curCard.back;
@@ -300,8 +324,8 @@
                 form.reset(); 
                 toggleModalCard('modal-edit');
                 updateCards();
-                document.getElementById('front').innerHTML = '';
-                document.getElementById('back').innerHTML = '';
+                document.getElementById('view-front').innerHTML = '';
+                document.getElementById('view-back').innerHTML = '';
             }
         };
         let data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
