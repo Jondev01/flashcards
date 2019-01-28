@@ -80,6 +80,9 @@
         </nav>
 
         <main class="py-4">
+            <div class="container">
+                <div id="flash-message"></div>
+            </div>
             @yield('content')
         </main>
     </div>

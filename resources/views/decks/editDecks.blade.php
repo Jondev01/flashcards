@@ -2,14 +2,15 @@
 
 @section('content')
 <div class="container">
-    <div>
+    <div id="displayDecks">
         <div>
-            <div id="number-of-decks" style="text-align:center; display:inline-block">
+            <div id="number-of-decks">
                     
             </div>
-            <div id="addDeck" style="display:inline-block">
+            <div id="addDeck">
                     <i class="fa fa-plus" onclick="toggleModalCard('modal-addDeck')"></i>
             </div>
+            <i class="fa fa-trash" onclick="deleteDeck()" aria-hidden="true"></i>
         </div>
         <select id="selectDeck" onchange="updateDeck()">
             @if(count($decks) > 0)
@@ -18,16 +19,19 @@
                 @endforeach
             @endif
         </select>
-        <button class="btn btn-danger" onclick="deleteDeck()"><i class="fa fa-trash" aria-hidden="true"></i></button>
     </div>
     <div id="displayCards">
-        <div id="number-of-cards" style="display:inline-block">
-        </div>
-        <div id="addCard" style="display: inline-block">
-            <i class="fa fa-plus" onclick="toggleModalCard('modal-card')"></i>
+        <div>
+            <div id="number-of-cards">
+            </div>
+            <div id="addCard">
+                    <i class="fa fa-plus" onclick="toggleModalCard('modal-card')"></i>
+            </div>
+            <i class="fa fa-trash" onclick="deleteCard()" aria-hidden="true"></i>
         </div>
         <select id = "selectCard" class="select-multiple" onchange="selectCard(this)" multiple>;
         </select>
+            
     </div>
 
 
@@ -70,9 +74,6 @@
             </div>
             {{  Form::submit('Save changes', ['class' => 'btn btn-primary']) }}
         {{  Form::close() }}
-    </div>
-    <div id="deleteCard">
-        <button class="btn btn-danger" onclick="deleteCard()"><i class="fa fa-trash" aria-hidden="true"></i></button>
     </div>
     <div id="view-card" class="card">
         <div class="card-body">
@@ -137,7 +138,7 @@ window.onclick = function(event) {
             }
         };
         //gets the url via hack
-        xhttp.open('GET', '{!! route('decks.index')!!}/getDecks', true);
+        xhttp.open('GET', '{!! route('decks.getDecks')!!}', true);
         xhttp.send();
     }
 
@@ -210,8 +211,7 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                let response = JSON.parse(this.responseText);
-                console.log(response)
+                flashMessage(this.responseText);
                 updateDecks();
             }
         };
@@ -229,8 +229,7 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                let response = JSON.parse(this.responseText);
-                console.log(response)
+                flashMessage(this.responseText);
                 updateDecks();
             }
         };
@@ -240,7 +239,7 @@ window.onclick = function(event) {
             data.push(parseInt(opt.value));
         }
         postData(`{!! route('cards.index')!!}/deleteMultiple`, {ids: data})
-        .then(data => console.log(data)) // JSON-string from `response.json()` call
+        .then(response => flashMessage(response["body"])) // JSON-string from `response.json()` call
         .then( () => updateCards()) // JSON-string from `response.json()` call
         .catch(error => console.error(error));
         //gets the url via hack
@@ -262,7 +261,12 @@ window.onclick = function(event) {
         body: JSON.stringify(data), // body data type must match "Content-Type" header
     })
     .then(response => response.json()); // parses response to JSON
-}
+    }
+
+    function flashMessage(msg){
+        document.getElementById('flash-message').innerHTML = msg;
+       //setInterval(() => document.getElementById('flash-message').innerHTML="", 5000);
+    }
 
     function toggleModalCard(id){
         let e = document.getElementById(id);
@@ -281,7 +285,7 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText); 
+                flashMessage(this.responseText);
                 form.reset(); 
                 toggleModalCard('modal-card');
                 updateCards();
@@ -301,7 +305,7 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText); 
+                flashMessage(this.responseText);
                 form.reset(); 
                 toggleModalCard('modal-addDeck');
                 updateDecks();
@@ -320,7 +324,7 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText); 
+                flashMessage(this.responseText); 
                 form.reset(); 
                 toggleModalCard('modal-edit');
                 updateCards();

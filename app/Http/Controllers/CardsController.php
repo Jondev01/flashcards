@@ -49,9 +49,8 @@ class CardsController extends Controller
         ]);
         $card->deck_id = $request->input('id');
         $card->save();
-        if($request->ajax())
-            return;
-        return response()->json("Card saved");
+        $request->session()->flash('success', 'The card was updated!');
+        return view('layouts.messages');
     }
 
     /**
@@ -93,7 +92,8 @@ class CardsController extends Controller
         $card->front = $request->input('front');
         $card->back = $request->input('back');
         $card->save();
-        return response()->json("Card updated");
+        $request->session()->flash('success', 'The card was updated!');
+        return view('layouts.messages');
     }
 
     /**
@@ -109,6 +109,9 @@ class CardsController extends Controller
 
     public function deleteMultiple(Request $request){
         Card::destroy($request->input('ids'));
-        return response()->json("Card(s) deleted");
+        $request->session()->flash('success','Card(s) deleted!');
+        return response()->json([
+            'body' => view('layouts.messages')->render(),
+        ]);
     }
 }

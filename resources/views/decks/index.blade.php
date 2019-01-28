@@ -2,13 +2,17 @@
 
 @section('content')
     <div class="container">
-        <select id="selectDeck" onchange="updateDeck()">
             @if(count($decks) > 0)
+                <select id="selectDeck" onchange="updateDeck()">
                 @foreach($decks as $deck)
                     <option id="{{$deck->id}}" value="{{$deck->id}}">{{$deck->name}}</option>
                 @endforeach
-            @endif
-        </select>
+                </select>
+            @elseif(count($decks) == 0)
+                <div style="text-align: center; font-size: 2rem;">
+                    <a href="{{route('decks.editDecks')}}">Create a Deck!</a>
+                </div>
+                @endif
         <!--<button onclick="nextCard()">Next</button>-->
         <div class="card noselect fc-pointer" onclick="flipCard()" style="height:40vh">
             <div class="card-body">
@@ -24,7 +28,8 @@
         let decks = {!!$decks!!};
         let deck, cards, card;
         let front = true;
-        updateDeck();
+        if(decks.length)
+            updateDeck();
         
         function updateDeck(){
             deck = getCurrentDeck();

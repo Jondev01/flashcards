@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Deck;
 use Auth;
+use Session;
 
 class DecksController extends Controller
 {
@@ -58,6 +59,8 @@ class DecksController extends Controller
         ]);
         $deck->user_id = Auth::id();
         $deck->save();
+        $request->session()->flash('success', 'The deck was added');
+        return view('layouts.messages');
         return redirect('home');
     }
 
@@ -112,6 +115,7 @@ class DecksController extends Controller
     public function destroy($id)
     {
         Deck::destroy($id);
-        return response()->json(['success' => 'The deck was successfully deleted']);
+        Session::flash('success','Deck deleted!'); 
+        return view('layouts.messages');
     }
 }

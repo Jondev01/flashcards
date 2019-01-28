@@ -10516,7 +10516,7 @@ a.text-dark:focus {
 
 select {
   display: block;
-  margin: 25px auto;
+  margin: 0 auto;
   min-width: 10rem;
   max-width: 50vw;
   padding: 5px 35px 5px 5px;
@@ -10527,6 +10527,18 @@ select {
 
 select :hover {
   cursor: pointer;
+}
+
+i:hover {
+  opacity: 0.8;
+}
+
+.fa-plus {
+  color: blue;
+}
+
+.fa-trash {
+  color: red;
 }
 
 .card-text {
@@ -10540,5 +10552,21 @@ select :hover {
 
 i:hover {
   cursor: pointer;
+}
+
+#displayCards,
+#displayDecks {
+  text-align: center;
+}
+
+#displayCards div,
+#displayDecks div {
+  margin: 0 5px;
+  display: inline-block;
+}
+
+#displayCards select,
+#displayDecks select {
+  margin-bottom: 2rem;
 }
 
