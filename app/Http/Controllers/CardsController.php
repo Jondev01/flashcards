@@ -49,7 +49,7 @@ class CardsController extends Controller
         ]);
         $card->deck_id = $request->input('id');
         $card->save();
-        $request->session()->flash('success', 'The card was updated!');
+        $request->session()->flash('success', 'Card saved!');
         return view('layouts.messages');
     }
 

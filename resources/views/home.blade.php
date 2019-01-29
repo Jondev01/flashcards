@@ -16,6 +16,10 @@
 
                     You are logged in!
                 </div>
+            <div class="card-body"> 
+            <a href="{{route('decks.index')}}">Practice</a> or <a href="{{route('decks.editDecks')}}">edit</a> your decks!
+            </div>
+
             </div>
         </div>
     </div>

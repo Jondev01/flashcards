@@ -143,6 +143,9 @@ window.onclick = function(event) {
     }
 
     function updateCards(){
+        document.getElementById('view-front').innerHTML = '';
+        document.getElementById('view-back').innerHTML = '';
+        delete document.getElementById('view-card').dataset.value;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             //on success
@@ -198,7 +201,6 @@ window.onclick = function(event) {
             curCard = card;
             let cardEl = document.getElementById('view-card');
             cardEl.dataset.value = id;
-            console.log(document.getElementById('view-front').innerHTML);
             document.getElementById('view-front').innerHTML = curCard.front;
             document.getElementById('view-back').innerHTML = curCard.back;
         }
@@ -225,14 +227,7 @@ window.onclick = function(event) {
     function deleteCard(){
         if(!confirm('Delete the selected card(s)?'))
             return;
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            //on success
-            if (this.readyState == 4 && this.status == 200) {
-                flashMessage(this.responseText);
-                updateDecks();
-            }
-        };
+        
         let e = document.getElementById('selectCard');
         let data = [];
         for(let opt of e.selectedOptions){
@@ -240,13 +235,8 @@ window.onclick = function(event) {
         }
         postData(`{!! route('cards.index')!!}/deleteMultiple`, {ids: data})
         .then(response => flashMessage(response["body"])) // JSON-string from `response.json()` call
-        .then( () => updateCards()) // JSON-string from `response.json()` call
+        .then( () => updateCards()) 
         .catch(error => console.error(error));
-        //gets the url via hack
-       /* xhttp.open('DELETE', '{!! route('cards.index')!!}'+`/${deck.id}`, true);
-        let token =  document.querySelector('meta[name=csrf-token]').content
-        xhttp.setRequestHeader('X-CSRF-Token', token);
-        xhttp.send();*/
     }
 
     function postData(url = ``, data = {}) {
@@ -264,8 +254,9 @@ window.onclick = function(event) {
     }
 
     function flashMessage(msg){
-        document.getElementById('flash-message').innerHTML = msg;
-       //setInterval(() => document.getElementById('flash-message').innerHTML="", 5000);
+        let el = document.getElementById('flash-message');
+        el.innerHTML += msg;
+       setTimeout(() => el.removeChild(el.childNodes[0]), 5000);
     }
 
     function toggleModalCard(id){
@@ -328,8 +319,10 @@ window.onclick = function(event) {
                 form.reset(); 
                 toggleModalCard('modal-edit');
                 updateCards();
-                document.getElementById('view-front').innerHTML = '';
+                //now in updateCards()
+                /*document.getElementById('view-front').innerHTML = '';
                 document.getElementById('view-back').innerHTML = '';
+                delete document.getElementById('view-card').dataset.value;*/
             }
         };
         let data = "?"+"front="+form["front"].value+"&" + "back=" + form["back"].value
