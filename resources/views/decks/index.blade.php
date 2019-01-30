@@ -16,7 +16,7 @@
         <!--<button onclick="nextCard()">Next</button>-->
         <div class="card noselect fc-pointer" onclick="flipCard()" style="height:40vh">
             <div class="card-body">
-                <p id="card" class="card-text">Current card</p>
+                <p id="card" class="card-text">Create a deck of flashcards, then come back to practice!</p>
                 <hr>
                 <p id="card-back" class="card-text"></p>
             </div>

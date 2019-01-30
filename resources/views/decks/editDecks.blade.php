@@ -4,13 +4,14 @@
 <div class="container">
     <div id="displayDecks">
         <div>
+            <h4>Your Decks</h4>
             <div id="number-of-decks">
-                    
+                    0 decks
             </div>
             <div id="addDeck">
-                    <i class="fa fa-plus" onclick="toggleModalCard('modal-addDeck')"></i>
+                    <i class="fa fa-plus" onclick="toggleModalCard('modal-addDeck')" data-toggle="tooltip" title="Create new deck"></i>
             </div>
-            <i class="fa fa-trash" onclick="deleteDeck()" aria-hidden="true"></i>
+            <i class="fa fa-trash" onclick="deleteDeck()" aria-hidden="true" data-toggle="tooltip" title="Delete selected deck"></i>
         </div>
         <select id="selectDeck" onchange="updateDeck()">
             @if(count($decks) > 0)
@@ -21,13 +22,15 @@
         </select>
     </div>
     <div id="displayCards">
+        <h5>Flashcards</h5>
         <div>
             <div id="number-of-cards">
+                0 flashcards
             </div>
             <div id="addCard">
-                    <i class="fa fa-plus" onclick="toggleModalCard('modal-card')"></i>
+                    <i class="fa fa-plus" onclick="toggleModalCard('modal-card')" data-toggle="tooltip" title="Create new flashcard"></i>
             </div>
-            <i class="fa fa-trash" onclick="deleteCard()" aria-hidden="true"></i>
+            <i class="fa fa-trash" onclick="deleteCard()" aria-hidden="true" data-toggle="tooltip" title="Delete selected flashcard(s)"></i>
         </div>
         <select id = "selectCard" class="select-multiple" onchange="selectCard(this)" multiple>;
         </select>
@@ -84,7 +87,7 @@
             </p>
         </div>  
         <div id="editCard">
-            <button class="btn btn-primary" onclick="toggleModalCard('modal-edit')"><i class="fa fa-edit"></i></button>
+            <button class="btn btn-primary" onclick="toggleModalCard('modal-edit')" data-toggle="tooltip" title="Edit card"><i class="fa fa-edit"></i></button>
         </div>
     </div>
 </div>
@@ -129,11 +132,11 @@ window.onclick = function(event) {
         xhttp.onreadystatechange = function() {
             //on success
             if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
-            if(this.responseText)
                 decks = JSON.parse(this.responseText);
-                displayDecks();
-                updateDeck();
+                if(decks.length > 0){
+                    displayDecks();
+                    updateDeck();
+                }
                 displayCards();
             }
         };
