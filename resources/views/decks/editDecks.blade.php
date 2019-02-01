@@ -114,7 +114,10 @@ window.onclick = function(event) {
     updateDecks();
     
     function updateDeck(){
-        deck = getCurrentDeck();
+        if(decks.length>0)
+            deck = getCurrentDeck();
+        else 
+            deck = undefined;
         updateCards();
     }
     function getCurrentDeck(){
@@ -133,10 +136,8 @@ window.onclick = function(event) {
             //on success
             if (this.readyState == 4 && this.status == 200) {
                 decks = JSON.parse(this.responseText);
-                if(decks.length > 0){
-                    displayDecks();
-                    updateDeck();
-                }
+                displayDecks();
+                updateDeck();
                 displayCards();
             }
         };
@@ -149,17 +150,17 @@ window.onclick = function(event) {
         document.getElementById('view-front').innerHTML = '';
         document.getElementById('view-back').innerHTML = '';
         delete document.getElementById('view-card').dataset.value;
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            //on success
-            if (this.readyState == 4 && this.status == 200) {
-            cards = JSON.parse(this.responseText);
+        if(deck)
+            fetch(`{!! route('decks.index')!!}/${deck.id}`)
+            .then( response => response.json())
+            .then( (data) => {
+                cards = data;
+                displayCards();
+            });
+        else {
+            cards = undefined;
             displayCards();
-            }
-        };
-        //gets the url via hack
-        xhttp.open('GET', '{!! route('decks.index')!!}'+`/${deck.id}`, true);
-        xhttp.send();
+        }
     }
 
     function displayDecks(){
@@ -210,6 +211,8 @@ window.onclick = function(event) {
     }
 
     function deleteDeck(){
+        if(decks.length == 0)
+            return;
         if(!confirm(`Do you want to delete the deck \'${deck.name}\'?`))
             return;
         let xhttp = new XMLHttpRequest();
@@ -275,6 +278,8 @@ window.onclick = function(event) {
     }
 
     function addCard(form){
+        if(decks.length == 0)
+            return;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             //on success
