@@ -114,7 +114,7 @@ window.onclick = function(event) {
     updateDecks();
     
     function updateDeck(){
-        if(decks.length>0)
+        if(Object.keys(decks).length>0)
             deck = getCurrentDeck();
         else 
             deck = undefined;
@@ -131,25 +131,21 @@ window.onclick = function(event) {
     }
 
     function updateDecks(){
-        let xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            //on success
-            if (this.readyState == 4 && this.status == 200) {
-                decks = JSON.parse(this.responseText);
-                displayDecks();
-                updateDeck();
-                displayCards();
-            }
-        };
-        //gets the url via hack
-        xhttp.open('GET', '{!! route('decks.getDecks')!!}', true);
-        xhttp.send();
+        fetch('{!! route('decks.getDecks')!!}')
+        .then( response => response.json())
+        .then( response => {
+            decks = response;
+            displayDecks();
+            updateDeck();
+            displayCards();
+        });
     }
 
     function updateCards(){
         document.getElementById('view-front').innerHTML = '';
         document.getElementById('view-back').innerHTML = '';
         delete document.getElementById('view-card').dataset.value;
+        curCard = undefined;
         if(deck)
             fetch(`{!! route('decks.index')!!}/${deck.id}`)
             .then( response => response.json())
@@ -211,7 +207,7 @@ window.onclick = function(event) {
     }
 
     function deleteDeck(){
-        if(decks.length == 0)
+        if(Object.keys(decks).length == 0)
             return;
         if(!confirm(`Do you want to delete the deck \'${deck.name}\'?`))
             return;
@@ -231,6 +227,8 @@ window.onclick = function(event) {
     }
 
     function deleteCard(){
+        if(!curCard)
+            return;
         if(!confirm('Delete the selected card(s)?'))
             return;
         
@@ -247,16 +245,16 @@ window.onclick = function(event) {
 
     function postData(url = ``, data = {}) {
         let token =  document.querySelector('meta[name=csrf-token]').content
-  // Default options are marked with *
-    return fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        headers: {
-            'Content-Type': 'application/json',
-             'X-CSRF-Token': token
-        },
-        body: JSON.stringify(data), // body data type must match "Content-Type" header
-    })
-    .then(response => response.json()); // parses response to JSON
+        // Default options are marked with *
+        return fetch(url, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': token
+            },
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+        })
+        .then(response => response.json()); // parses response to JSON
     }
 
     function flashMessage(msg){
@@ -274,11 +272,15 @@ window.onclick = function(event) {
             e.children[0]["front"].value = curCard.front;
             e.children[0]["back"].value = curCard.back;
         }
+        if(id === 'modal-card'){
+            if(!deck)
+                return;
+        }
         e.style.display = e.style.display ==='block' ? 'none' : 'block';
     }
 
     function addCard(form){
-        if(decks.length == 0)
+        if(Object.keys(decks).length == 0)
             return;
         let xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
