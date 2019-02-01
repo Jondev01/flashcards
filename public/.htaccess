@@ -18,11 +18,5 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    #add this on public/.htaccess for Laravel to force https
-    RewriteCond %{HTTPS} !=on
-    RewriteCond %{HTTP:X-Forwarded-Proto} !https 
-    RewriteCond %{HTTP_HOST} !=localhost
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
