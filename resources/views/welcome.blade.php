@@ -3,7 +3,13 @@
 @section('content')
 
 <div class="container">
-    <h2>Create your own decks of flashcards today and start practicing.</h2>
-    <h4><a href="{{route('register')}}">Join now!</a></h4>
+    <div class="card">
+        <div class="card-body">
+            <div class="card-text">
+                <h3>Create your own decks of flashcards today and start practicing.</h2>
+                <p><a href="{{route('register')}}">Join now!</a></p>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
